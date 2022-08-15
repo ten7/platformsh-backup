@@ -214,6 +214,32 @@ As a whole directory is synchronized for files, it is not possible to rotate the
 
 An alternative would be to configure this role to execute using slightly different configurations for each backup period. One such way is to change the `path` in your `targets` to include the weekday (`example.com/files/monday`). Then, create multiple configuration files for each weekday. When the next week begins, the previous week's files are overwritten with updates. 
 
+### Ping URL on completion
+
+When a backup completes, you have the option to ping an URL via HTTP:
+
+```yaml
+platformsh_backup:
+  backups:
+    - name: "example.com database"
+      source: "example.com"
+      env: "live"
+      relationship: "my_db"
+      healthcheckUrl: "https://pings.example.com/path/to/service"
+      targets:
+        - remote: "example-s3-bucket"
+          path: "example.com/database"
+          retainCount: 3
+          disabled: true
+        - remote: "sftp.example.com"
+          path: "backups/example.com/database"
+          retainCount: 3
+          disabled: false
+```
+
+Where:
+* `healthcheckUrl` is the URL to ping when the backup completes successfully. Optional.
+
 ## Example Playbook
 
 ```yaml

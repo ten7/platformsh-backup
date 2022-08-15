@@ -1,7 +1,7 @@
 ---
 - name: Smoke test the environment.
   fail:
-    msg: "Could not find Pantheon Backup, or missing required parameters"
+    msg: "Could not find platformsh_backup, or missing required parameters"
   when:
     - platformsh_backup | default({}) | length < 1
     - platformsh_backup.sources | default([]) | length < 1
@@ -11,7 +11,7 @@
 - name: Create a temp directory to hold the backup
   tempfile:
     state: directory
-    prefix: "pantheon-backup"
+    prefix: "platformsh-backup"
   register: _run_temp_dir
   notify:
     - delete temp items
