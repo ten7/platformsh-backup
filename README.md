@@ -294,7 +294,7 @@ Where:
                   path: "backups/example.com/files"
                   disabled: false
       roles:
-         - { role: ten7.pantheon_deploy }
+         - { role: ten7.platformsh_backup }
 ```
 
 ## License

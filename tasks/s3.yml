@@ -3,7 +3,6 @@
     var: _remote
   when:
     - platformsh_backup.debug | default(false) == true
-
 - name: Rotate files if a retainCount is set.
   shell: >
     s3cmd mv
@@ -45,7 +44,6 @@
     - _target.retainCount | default(1) > 1
   ignore_errors: true
   no_log: "{{ platformsh_backup.debug | default(false) | ternary(false, true) }}"
-
 - name: Push backup to S3
   amazon.aws.aws_s3:
     bucket: "{{ _remote.bucket }}"

@@ -7,46 +7,36 @@
     - _backup.env | default('') == ''
     - _backup.relationship | default('') == ''
     - _backup.remotes | default([]) | length < 1
-
 - debug: var=_backup
   when:
     - platformsh_backup.debug | default(false) == true
-
 - name: Check if the source configuration exists
   fail:
     msg: "Could not find source configuration {{ _backup.source }}"
   when:
     - platformsh_backup.sources[_backup.source] is not defined
-
 - name: Get the source configuration
   set_fact:
     _source: "{{ platformsh_backup.sources[_backup.source] }}"
-
 - name: Check if the CLI token is specified
   fail:
     msg: "Could not find CLI token for {{ _backup.source }}"
   when:
     - _source.cliTokenFile is not defined
     - _source.cliToken is not defined
-
 - name: Check if the SSH keys are provided
   fail:
     msg: "Could not find SSH keys for {{ _backup.source }}"
   when:
     - _source.keyFile is not defined
     - _source.pubKeyFile is not defined
-
 - name: Generate the backup file prefix and suffix
   set_fact:
     _backup_file_prefix: "{{ _source.project }}.{{ _backup.env }}.{{ _backup.relationship }}"
     _backup_file_suffix: "tar.gz"
-    
 - name: Generate the backup file path
   set_fact:
     _backup_file_path: "{{ _run_temp_dir.path }}/{{ _backup_file_prefix }}-0.{{ _backup_file_suffix }}"
-
-# Need to accept hostkeys
-
 - name: Backup database
   shell: >
     {{ platformsh_backup.cliPath | default('platform') }} db:dump
@@ -73,7 +63,6 @@
       {% else %}\
       {{ _source.cliToken }}\
       {% endif %}"
-      
 - name: Send backup to remotes                                                        
   include_tasks: 
     file: "\
@@ -93,6 +82,5 @@
     - _target.disabled | default(false) == false                                          
     - platformsh_backup.remotes[_target.remote] is defined                               
     - platformsh_backup.remotes[_target.remote].type is defined
-
 - include_tasks: "httpPing.yml"
 

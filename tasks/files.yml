@@ -7,35 +7,29 @@
     - _backup.env | default('') == ''
     - _backup.mount | default('') == ''
     - _backup.remotes | default([]) | length < 1
-
 - debug: var=_backup
   when:
     - platformsh_backup.debug | default(false) == true
-
 - name: Check if the source configuration exists
   fail:
     msg: "Could not find source configuration {{ _backup.source }}"
   when:
     - platformsh_backup.sources[_backup.source] is not defined
-
 - name: Get the source configuration
   set_fact:
     _source: "{{ platformsh_backup.sources[_backup.source] }}"
-
 - name: Check if the CLI token is specified
   fail:
     msg: "Could not find CLI token for {{ _backup.source }}"
   when:
     - _source.cliTokenFile is not defined
     - _source.cliToken is not defined
-
 - name: Check if the SSH keys are provided
   fail:
     msg: "Could not find SSH keys for {{ _backup.source }}"
   when:
     - _source.keyFile is not defined
     - _source.pubKeyFile is not defined
-
 - name: Get the Platform SSH pipe connection string
   shell: >
     {{ platformsh_backup.cliPath | default('platform') }}
@@ -54,18 +48,15 @@
       {% else %}\
       {{ _source.cliToken }}\
       {% endif %}"
-      
 - debug: var=_platformsh_backup_ssh_pipe
   when:
     - platformsh_backup.debug | default(false) == true
-      
 - name: Create a tempfile for the rclone config
   tempfile:
     prefix: "platformsh-backup-files-"
     suffix: ".conf"
     state: file
   register: _rclone_conf
-  
 - name: Template the rclone conf
   copy:
     content: |
@@ -110,12 +101,10 @@
       {% endif %}
       {% endfor %}
     dest: "{{ _rclone_conf.path }}"
-
 - debug: 
     msg: "{{ lookup('file', _rclone_conf.path) }}"
   when:
     - platformsh_backup.debug | default(false) == true
-
 - name: Sync files using rclone
   shell: >
     rclone sync
@@ -146,11 +135,9 @@
   retries: "{{ _source.retryCount | default(3) }}"
   delay: "{{ _source.retryDelay | default(30) }}"
   no_log: "{{ platformsh_backup.debug | default(false) | ternary(false, true) }}"
-  
 - name: Delete the rclone.conf
   file:
     path: "{{ _rclone_conf.path }}"
     state: absent
-  
 - include_tasks: "httpPing.yml"
 

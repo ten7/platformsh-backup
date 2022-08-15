@@ -7,7 +7,6 @@
     - platformsh_backup.sources | default([]) | length < 1
     - platformsh_backup.destinations | default([]) | length < 1
     - platformsh_backup.backups | default([]) | length < 1
-
 - name: Create a temp directory to hold the backup
   tempfile:
     state: directory
@@ -15,7 +14,6 @@
   register: _run_temp_dir
   notify:
     - delete temp items
-    
 - name: Do database backups
   include_tasks: "database.yml"
   loop: "{{ platformsh_backup.backups | selectattr('relationship', 'defined') }}"
@@ -26,7 +24,6 @@
   when:
     - _backup.disabled | default(false) != true
   ignore_errors: "{{ platformsh_backup.stopOnFailure | default(false) | bool }}"
-
 - name: Do file backups
   include_tasks: "files.yml"
   loop: "{{ platformsh_backup.backups | selectattr('mount', 'defined') }}"

@@ -3,7 +3,6 @@
     var: _remote
   when:
     - platformsh_backup.debug | default(false) == true
-
 - name: Copy identity files to our temp directory
   copy:
     src: "{{ item }}"
@@ -15,7 +14,6 @@
   loop:
     - "{{ _remote.keyFile }}"
     - "{{ _remote.pubKeyFile }}"
-
 - name: Create the remote directory
   shell: >
     ssh
@@ -27,7 +25,6 @@
     mkdir -p {{ _target.path }}
   when:
     - _target.path is defined
-
 - name: Rotate files if a retainCount is set.
   shell: >
     ssh
@@ -43,7 +40,6 @@
   when:
     - _target.retainCount | default(1) > 1
   ignore_errors: true
-
 - name: Upload the backup.
   shell: >
     scp
