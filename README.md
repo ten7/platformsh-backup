@@ -212,6 +212,32 @@ During a backup, if `retainCount` is set:
 
 This feature works for database backups only, and supports both in S3 and SFTP remotes.
 
+### Upload retries
+
+Sometimes an upload will fail due to transient network issues. You can specify how to control the backup using the `retries` and `retryDelay` keys on each target:
+
+```yaml
+platformsh_backup:
+  backups:
+    - name: "example.com database"
+      source: "example.com"
+      env: "live"
+      relationship: "my_db"
+      targets:
+        - remote: "example-s3-bucket"
+          path: "example.com/database"
+          retries: 3
+          retryDelay: 30
+        - remote: "sftp.example.com"
+          path: "backups/example.com/database"
+          retries: 3
+          retryDelay: 30
+```
+
+Where:
+* `retries` is the total number of retries to perform if the upload should fail. Defaults to no retries.
+* `retryDelay` the number of seconds to wait between retries. Defaults to no delay.
+
 ### Rotating file backups
 
 As a whole directory is synchronized for files, it is not possible to rotate the backups similar to database dumps. 
